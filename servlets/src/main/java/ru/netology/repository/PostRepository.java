@@ -4,14 +4,18 @@ import org.springframework.stereotype.Repository;
 import ru.netology.exception.NotFoundException;
 import ru.netology.model.Post;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicLong;
 
 @Repository
 public class PostRepository {
-  List<Post> posts = new CopyOnWriteArrayList<>();
+  //List<Post> posts = new CopyOnWriteArrayList<>();
+  List<Post> posts = Collections.synchronizedList(new ArrayList<>());
   private final AtomicLong atomicLong = new AtomicLong(1L);
   public List<Post> all() {
     return posts;
