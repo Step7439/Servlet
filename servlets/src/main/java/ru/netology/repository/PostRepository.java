@@ -8,16 +8,17 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.atomic.AtomicLong;
 
 @Repository
 public class PostRepository {
   //List<Post> posts = new CopyOnWriteArrayList<>();
-  List<Post> posts = Collections.synchronizedList(new ArrayList<>());
+  ConcurrentLinkedQueue<Post> posts = new ConcurrentLinkedQueue<Post>();
   private final AtomicLong atomicLong = new AtomicLong(1L);
-  public List<Post> all() {
+  public ConcurrentLinkedQueue<Post> all() {
     return posts;
   }
 
