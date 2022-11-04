@@ -6,6 +6,7 @@ import ru.netology.model.Post;
 import ru.netology.repository.PostRepository;
 
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 @Service
@@ -16,7 +17,7 @@ public class PostService {
     this.repository = repository;
   }
 
-  public ConcurrentLinkedQueue<Post> all() {
+  public List<Post> all() {
     return repository.all();
   }
 
@@ -28,8 +29,8 @@ public class PostService {
     return repository.save(post);
   }
 
-  public Post removeById(long id) {
-    return repository.removeById(id);
+  public void removeById(long id) {
+    repository.removeById(id);
 
   }
 }

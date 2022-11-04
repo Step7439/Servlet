@@ -5,43 +5,39 @@ import ru.netology.exception.NotFoundException;
 import ru.netology.model.Post;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentLinkedDeque;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicLong;
 
 @Repository
-public class PostRepository {
-  //List<Post> posts = new CopyOnWriteArrayList<>();
-  ConcurrentLinkedQueue<Post> posts = new ConcurrentLinkedQueue<Post>();
-  private final AtomicLong atomicLong = new AtomicLong(1L);
-  public ConcurrentLinkedQueue<Post> all() {
-    return posts;
-  }
+public class PostRepository extends Post {
+    private final ConcurrentHashMap<Long, Post> posts = new ConcurrentHashMap<>();
+    private final AtomicLong atomicLong = new AtomicLong(1);
 
-  public Optional<Post> getById(long id) {
-    return posts.stream()
-            .filter(post -> post.getId() == id)
-            .findFirst();
-  }
+    public List<Post> all() {
+        return new ArrayList<>(posts.values());
+    }
+
+    public Optional<Post> getById(long id) {
+        return Optional.ofNullable(posts.get(id));
+    }
 
   public Post save(Post post) {
-      if (post.getId() == 0L){
+      if (post.getId() == 0){
         post.setId(atomicLong.getAndIncrement());
-        posts.add(post);
+        posts.put(post.getId(), post);
         return post;
       }else {
-        final Post endPost = getById(post.getId()).orElseThrow(NotFoundException::new);
-        endPost.setContent(post.getContent());
-        return endPost;
+       if (posts.containsKey(post.getId())){
+           posts.replace(post.getId(), post);
+       }else {
+           throw new NotFoundException("Not Found");
+       }
+        return post;
       }
   }
-  public Post removeById(long id) {
-    final Post oldPost = getById(id).orElseThrow(NotFoundException::new);
-    posts.removeIf(post -> post.getId() == id);
-    return oldPost;
+  public void removeById(long id) {
+    posts.remove(id);
   }
 }
