@@ -12,8 +12,8 @@ import java.util.concurrent.atomic.AtomicLong;
 
 @Repository
 public class PostRepository extends Post {
-    private final ConcurrentHashMap<Long, Post> posts = new ConcurrentHashMap<>();
-    private final AtomicLong atomicLong = new AtomicLong(1);
+    private ConcurrentHashMap<Long, Post> posts = new ConcurrentHashMap<>();
+    private AtomicLong atomicLong = new AtomicLong(0);
 
     public List<Post> all() {
         return new ArrayList<>(posts.values());
@@ -23,21 +23,19 @@ public class PostRepository extends Post {
         return Optional.ofNullable(posts.get(id));
     }
 
-  public Post save(Post post) {
+  public Post save(Post post) throws NotFoundException {
       if (post.getId() == 0){
-        post.setId(atomicLong.getAndIncrement());
+        post.setId(atomicLong.incrementAndGet());
         posts.put(post.getId(), post);
-        return post;
       }else {
-       if (posts.containsKey(post.getId())){
+       if (posts.containsKey(post.getId()))
            posts.replace(post.getId(), post);
-       }else {
+       else
            throw new NotFoundException("Not Found");
        }
         return post;
-      }
-  }
-  public void removeById(long id) {
-    posts.remove(id);
+    }
+  public Post removeById(long id) {
+      return posts.remove(id);
   }
 }
