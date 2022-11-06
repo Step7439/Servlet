@@ -16,11 +16,6 @@ import java.io.IOException;
 
 public class MainServlet extends HttpServlet {
     private PostController controller;
-
-    public static final String GET_METHOD = "GET";
-    public static final String POST_METHOD = "POST";
-    public static final String DELETE_METHOD = "DELETE";
-
     @Override
     public void init() {
         final var repository = new PostRepository();
